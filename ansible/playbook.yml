@@ -1,0 +1,7 @@
+---
+- name: Setup - OCA
+  hosts: server
+  become: true
+  gather_facts: off
+  roles:
+    - setup
