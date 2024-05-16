@@ -1,0 +1,8 @@
+---
+
+- name: Pull image from DockerHub
+  community.docker.docker_image:
+    name: ocaufcg/oca-frontend
+    source: pull
+    pull:
+      platform: amd64
