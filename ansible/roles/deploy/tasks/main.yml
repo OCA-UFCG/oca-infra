@@ -1,8 +1,16 @@
 ---
-
+# tasks file for role/deploy
 - name: Pull image from DockerHub
-  community.docker.docker_image:
-    name: ocaufcg/oca-frontend
-    source: pull
-    pull:
-      platform: amd64
+  shell: "docker pull {{ docker_image }}: {{ tag }}"
+
+- name: Stop container 
+  shell: docker stop {{ container_name }}
+  ignore_errors: true
+
+- name: Remove container
+  shell: docker rm {{ container_name }}
+  ignore_errors: true
+
+- name: Run container
+  shell: "docker run -d --name {{ container_name }} -p {{ container_port }}:{{ container_port }} {{ docker_image }}:{{ tag }}"
+  ignore_errors: true
