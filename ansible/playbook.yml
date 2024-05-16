@@ -5,3 +5,4 @@
   gather_facts: off
   roles:
     - setup
+    - deploy
