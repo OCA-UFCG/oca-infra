@@ -1,8 +1,23 @@
 ---
-
-- name: Pull image from DockerHub
-  community.docker.docker_image:
-    name: ocaufcg/oca-frontend
+# tasks file for role/deploy
+- name: Ensure the Docker image is pulled
+  docker_image:
+    name: "{{ docker_image }}"
+    tag: latest
     source: pull
-    pull:
-      platform: amd64
+
+- name: Stop and remove existing container
+  docker_container:
+    name: "{{ container_name }}"
+    state: absent
+    force_kill: yes
+
+- name: Run the Docker container
+  docker_container:
+    name: "{{ container_name }}"
+    image: "{{ docker_image }}:latest"
+    state: started
+    restart_policy: always
+    ports:
+      - "{{ container_port }}:{{ container_port }}"
+    detach: true
