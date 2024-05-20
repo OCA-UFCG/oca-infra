@@ -1,16 +1,23 @@
 ---
 # tasks file for role/deploy
-- name: Stop container 
-  shell: "docker stop {{ container_name }}"
-  ignore_errors: true
+- name: Ensure the Docker image is pulled
+  docker_image:
+    name: "{{ docker_image }}"
+    tag: latest
+    source: pull
 
-- name: Remove container
-  shell: "docker rm {{ container_name }}"
-  ignore_errors: true
+- name: Stop and remove existing container
+  docker_container:
+    name: "{{ container_name }}"
+    state: absent
+    force_kill: yes
 
-- name: Pull image from DockerHub
-  shell: "docker pull {{ docker_image }}:latest"
-
-- name: Run container
-  shell: "docker run -d --name {{ container_name }} -p {{ container_port }}:{{ container_port }} {{ docker_image }}:latest"
-  ignore_errors: true
+- name: Run the Docker container
+  docker_container:
+    name: "{{ container_name }}"
+    image: "{{ docker_image }}:latest"
+    state: started
+    restart_policy: always
+    ports:
+      - "{{ container_port }}:{{ container_port }}"
+    detach: true
