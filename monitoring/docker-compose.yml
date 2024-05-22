@@ -20,7 +20,22 @@ services:
       - 9093:9093
     networks:
       - monitoring
-
+  
+  blackbox_exporter:
+    image: prom/blackbox-exporter:latest
+    container_name: blackbox-exporter
+    restart: unless-stopped
+    ports:
+      - 9115:9115
+    networks:
+      - monitoring
+    command:
+      - '--config.file=/etc/blackbox_exporter/blackbox-config.yml'
+      - '--web.listen-address=0.0.0.0:9115'
+      - '--log.level=info'
+    volumes:
+      - ./blackbox/blackbox-config.yml:/etc/blackbox_exporter/blackbox-config.yml
+	
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus

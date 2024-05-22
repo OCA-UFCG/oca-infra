@@ -9,7 +9,7 @@ alerting:
   alertmanagers:
     - scheme: http
       static_configs:
-        - targets: ['150.165.85.122:9093']
+        - targets: ['<ip>:9093']
 
 # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
 rule_files:
@@ -21,9 +21,29 @@ scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
   - job_name: "prometheus"
     static_configs:
-      - targets: ["150.165.85.122:9090"]
+      - targets: ["<ip>:9090"]
 
   - job_name: "node"
     scrape_interval: 5s
     static_configs:
-      - targets: ["150.165.85.122:9100"]
+      - targets: ["<ip>:9100"]
+
+  - job_name: "oca"
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - https://oca.lsd.ufcg.edu.br
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: <ip>:9115
+
+  - job_name: 'blackbox_exporter'  # collect blackbox exporter's operational metrics.
+    static_configs:
+      - targets: ['<ip>:9115']
+
