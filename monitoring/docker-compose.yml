@@ -7,6 +7,20 @@ volumes:
 
 services:
 
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alert-manager
+    restart: unless-stopped
+    volumes:
+      - "./alertmanager:/config"
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager-data:/data
+    command: --config.file=/config/alertmanager.yml --log.level=debug
+    ports:
+      - 9093:9093
+    networks:
+      - monitoring
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -14,6 +28,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -25,19 +40,6 @@ services:
     networks:
       - monitoring
     user: root
-    
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: alert-manager
-    restart: unless-stopped
-    volumes:
-      - "./alertmanager/alertmanager.yml:/config"
-      - alertmanager-data:/data
-    command: --config.file=/config/alertmanager/alertmanager.yml --log.level=debug
-    ports:
-      - 9093:9093
-    networks:
-      - monitoring
   
   grafana:
     image: grafana/grafana:latest
