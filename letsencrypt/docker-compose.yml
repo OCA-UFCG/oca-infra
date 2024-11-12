@@ -23,5 +23,6 @@ services:
 
 networks:
   oca-network:
+    name: oca-network
     driver: bridge
 
