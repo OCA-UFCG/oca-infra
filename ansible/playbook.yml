@@ -4,5 +4,5 @@
   become: true
   gather_facts: off
   roles:
-    - setup
-    - deploy
+    - { role: setup, tags: setup }
+    - { role: deploy, tags: deploy }
