@@ -1,3 +1,5 @@
+version: "3.7"
+
 networks:
   monitoring:
 
@@ -6,7 +8,6 @@ volumes:
   alertmanager-data: {}
 
 services:
-
   alertmanager:
     image: prom/alertmanager:latest
     container_name: alert-manager
@@ -20,7 +21,7 @@ services:
       - 9093:9093
     networks:
       - monitoring
-  
+
   blackbox_exporter:
     image: prom/blackbox-exporter:latest
     container_name: blackbox-exporter
@@ -30,12 +31,12 @@ services:
     networks:
       - monitoring
     command:
-      - '--config.file=/etc/blackbox_exporter/blackbox-config.yml'
-      - '--web.listen-address=0.0.0.0:9115'
-      - '--log.level=info'
+      - "--config.file=/etc/blackbox_exporter/blackbox-config.yml"
+      - "--web.listen-address=0.0.0.0:9115"
+      - "--log.level=info"
     volumes:
       - ./blackbox/blackbox-config.yml:/etc/blackbox_exporter/blackbox-config.yml
-	
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -45,17 +46,17 @@ services:
       - prometheus-data:/prometheus
       - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--web.enable-lifecycle"
     ports:
       - 9090:9090
     networks:
       - monitoring
     user: root
-  
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
