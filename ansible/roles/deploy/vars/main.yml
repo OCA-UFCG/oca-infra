@@ -3,3 +3,4 @@
 container_name: oca-frontend-app
 container_port: 3000
 docker_image: ocaufcg/oca-frontend
+dns_name: oca.local

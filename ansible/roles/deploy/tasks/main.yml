@@ -21,3 +21,98 @@
     ports:
       - "{{ container_port }}:{{ container_port }}"
     detach: true
+
+- name: Create a directory for the Nginx configuration
+  file:
+    path: ./nginx
+    state: directory
+
+- name: Create a directory for SSL certificates
+  file:
+    path: ./ssl
+    state: directory
+
+- name: Create the oca.conf file for Nginx
+  copy:
+    dest: ./nginx/oca.conf
+    content: |
+      server {
+          listen [::]:443 ssl ipv6only=on; 
+          listen 443 ssl; 
+
+          server_name {{ dns_name }};
+
+          ssl_certificate /etc/nginx/ssl/lsd.pem;  
+          ssl_certificate_key /etc/nginx/ssl/lsd.key;  
+          ssl_trusted_certificate /etc/nginx/ssl/lsd.crt;  
+
+          location / {
+            client_max_body_size 6G;
+            proxy_pass http://{{ container_name }}:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+          }
+      }
+
+      server {
+          listen 80;
+          listen [::]:80;
+          server_name {{ dns_name }};
+          server_tokens off;
+
+          location / {
+              return 301 https://$host$request_uri;
+          }
+      }
+
+- name: Copy SSL certificates
+  copy:
+    src: "/home/clsmfm/workspace/oca/oca-infra/certs/{{ item }}"
+    dest: ./ssl/ 
+  with_items:
+    - lsd.pem
+    - lsd.key
+    - lsd.crt
+
+- name: Create the docker-compose.yml file
+  copy:
+    dest: ./docker-compose.yml
+    content: |
+      version: '3'
+      services:
+        nginx:
+          image: nginx:latest
+          ports:
+            - 80:80
+            - 443:443
+          restart: always
+          volumes:
+            - ./nginx/:/etc/nginx/conf.d/:ro
+            - ./ssl/:/etc/nginx/ssl/:ro
+          networks:
+            - oca-network
+
+      networks:
+        oca-network:
+          name: oca-network
+          driver: bridge
+
+- name: Run the Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: .
+    state: present
+
+- name: Run the Docker container
+  docker_container:
+    name: "{{ container_name }}"
+    image: "{{ docker_image }}:latest"
+    state: started
+    restart_policy: always
+    ports:
+      - "{{ container_port }}:{{ container_port }}"
+    detach: true
+    networks:
+      - name: oca-network

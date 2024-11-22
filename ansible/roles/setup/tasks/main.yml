@@ -25,3 +25,19 @@
 - name: Install Docker Module for Python
   pip:
     name: docker
+
+- name: Ensure the Docker group exists
+  group:
+    name: docker
+    state: present
+
+- name: Add user to the Docker group
+  user:
+    name: "{{ ansible_user }}" 
+    group: docker
+    append: yes
+
+- name: Restart Docker service
+  service:
+    name: docker
+    state: restarted
