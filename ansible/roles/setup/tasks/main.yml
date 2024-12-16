@@ -1,4 +1,5 @@
 ---
+# tasks file for role/deploy and role/monitor
 - name: Install dependencies
   ansible.builtin.apt:
     update_cache: yes
@@ -22,22 +23,17 @@
     state: latest
     update_cache: true
 
-- name: Install Docker Module for Python
-  pip:
-    name: docker
-
 - name: Ensure the Docker group exists
   group:
     name: docker
     state: present
 
-- name: Add user to the Docker group
-  user:
-    name: "{{ ansible_user }}" 
-    group: docker
-    append: yes
+- name: Add user to docker group
+  ansible.builtin.user:
+    name: USERNAME
+    groups: docker
+    append: true
 
-- name: Restart Docker service
-  service:
-    name: docker
-    state: restarted
+- name: Reset ssh connection to allow user changes to affect ansible user
+  ansible.builtin.meta:
+    reset_connection

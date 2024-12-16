@@ -1,8 +1,16 @@
 ---
-- name: Setup - OCA
+- name: OCA Production
   hosts: server
   become: true
   gather_facts: off
   roles:
     - { role: setup, tags: setup }
     - { role: deploy, tags: deploy }
+
+- name: OCA Monitor
+  hosts: monitor
+  become: true
+  gather_facts: off
+  roles:
+    - { role: setup, tags: setup }
+    - { role: monitor, tags: monitor }
