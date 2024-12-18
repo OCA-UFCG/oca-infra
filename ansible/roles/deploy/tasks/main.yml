@@ -48,7 +48,7 @@
 
 - name: Copy SSL certificates
   copy:
-    src: "/home/clsmfm/workspace/oca/oca-infra/certs/{{ item }}"
+    src: "../../../../certs/{{ item }}"
     dest: ./ssl/
   with_items:
     - lsd.pem

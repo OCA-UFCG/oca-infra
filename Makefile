@@ -6,5 +6,5 @@ setup:
 deploy:
 	ansible-playbook -i ./ansible/hosts.ini ./ansible/playbook.yml --tags deploy
 
-monitoring:
+monitor:
 	ansible-playbook -i ./ansible/hosts.ini ./ansible/playbook.yml --tags monitor
