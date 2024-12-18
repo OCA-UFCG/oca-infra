@@ -17,22 +17,22 @@
 
 - name: Create the alertmanager.yml file
   template:
-    src: alertmanager.yml
+    src: alertmanager/alertmanager.yml
     dest: ./alertmanager/alertmanager.yml
 
 - name: Create the blackbox-config.yml file
   template:
-    src: blackbox-config.yml
+    src: blackbox/blackbox-config.yml
     dest: ./blackbox/blackbox-config.yml
 
 - name: Create the prometheus.yml file
   template:
-    src: prometheus.yml
+    src: prometheus/prometheus.yml
     dest: ./prometheus/prometheus.yml
 
 - name: Create the prometheus alert.yml file
   template:
-    src: alerts.yml
+    src: prometheus/prometheus-alerts.yml
     dest: ./prometheus/alerts.yml
 
 - name: Create the docker-compose.yml file

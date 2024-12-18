@@ -56,43 +56,18 @@
     - lsd.crt
 
 - name: Create the docker-compose.yml file
-  copy:
+  template:
+    src: ./docker-compose.yml
     dest: ./docker-compose.yml
-    content: |
-      version: '3'
-      services:
-        nginx:
-          image: nginx:latest
-          ports:
-            - 80:80
-            - 443:443
-          restart: always
-          volumes:
-            - ./nginx/:/etc/nginx/conf.d/:ro
-            - ./ssl/:/etc/nginx/ssl/:ro
-          networks:
-            - oca-network
-
-        node-exporter:
-          image: prom/node-exporter:latest
-          container_name: node-exporter
-          restart: always
-          ports:
-            - 9100:9100
-
-      networks:
-        oca-network:
-          name: oca-network
-          driver: bridge
 
 - name: Stop and remove existing container if it is running
   docker_container:
     name: "{{ container_name }}"
     state: absent
     force_kill: yes
-  ignore_errors: yes 
+  ignore_errors: yes
   vars:
-    ansible_docker_host: "unix://var/run/docker.sock" 
+    ansible_docker_host: "unix://var/run/docker.sock"
 
 - name: Pull the OCA image
   community.docker.docker_image:
