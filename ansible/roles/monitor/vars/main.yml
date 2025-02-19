@@ -1,5 +1,5 @@
 ---
 # vars file for roles/monitor
 slack_api_url: 'https://hooks.slack.com/services/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' # ${{ secrets.SLACK_API_URL }}
-ips_to_monitor: ['54.232.31.78','54.232.9.139'] # ${{ secrets.IPS_TO_MONITOR }}
+ips_to_monitor: ['18.228.192.223','56.124.112.219'] # ${{ secrets.IPS_TO_MONITOR }}
 dns_name: 'https://oca.lsd.ufcg.edu.br' # ${{ secrets.DNS_NAME }}
