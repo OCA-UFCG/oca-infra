@@ -1,38 +1,45 @@
 ---
-# tasks file for role/deploy and role/monitor
-- name: Install dependencies
+- name: Docker - install apt package dependencies
+  become: true
   ansible.builtin.apt:
-    update_cache: yes
-    pkg:
+    name:
       - git
-      - python3-pip
-
-- name: Add Docker GPG apt Key
-  apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - software-properties-common
+      - python3-pip 
     state: present
 
-- name: Add Docker Repository
-  apt_repository:
-    repo: deb https://download.docker.com/linux/ubuntu focal stable
-    state: present
-
-- name: Update apt and install docker-ce
-  apt:
-    name: docker-ce
-    state: latest
-    update_cache: true
-
-- name: Ensure the Docker group exists
-  group:
+- name: Docker - install docker.io and docker-compose-v2
+  become: true
+  ansible.builtin.apt:
+    name: 
+      - docker.io
+      - docker-compose-v2
+    update_cache: "yes"
+    
+- name: Docker - Create the docker group
+  become: true
+  ansible.builtin.group:
     name: docker
     state: present
 
-- name: Add user to docker group
+- name: Docker - Add users to the group
+  become: true
   ansible.builtin.user:
-    name: USERNAME
-    groups: docker
-    append: true
+    name: "ubuntu"
+    groups: ["docker"]
+    append: "yes"
+
+- name: Install python packages for ansible management of docker and docker-compose
+  ansible.builtin.pip:
+    name: 
+      - docker
+      - docker-compose
+      - PyYAML
 
 - name: Reset ssh connection to allow user changes to affect ansible user
   ansible.builtin.meta:
