@@ -1,5 +1,6 @@
 ---
 # vars file for roles/deploy
-container_name: oca-frontend-app
 container_port: 3000
+container_name: oca-frontend-app
 docker_image: ocaufcg/oca-frontend
+dns_name: 'https://oca.lsd.ufcg.edu.br'

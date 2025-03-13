@@ -1,23 +1,92 @@
 ---
 # tasks file for role/deploy
-- name: Ensure the Docker image is pulled
-  docker_image:
-    name: "{{ docker_image }}"
-    tag: latest
-    source: pull
+- name: Create a directory for the Nginx configuration
+  file:
+    path: ./nginx
+    state: directory
 
-- name: Stop and remove existing container
+- name: Create a directory for SSL certificates
+  file:
+    path: ./ssl
+    state: directory
+
+- name: Create the oca.conf file for Nginx
+  copy:
+    dest: ./nginx/oca.conf
+    content: |
+      server {
+          listen [::]:443 ssl ipv6only=on; 
+          listen 443 ssl; 
+
+          server_name {{ dns_name }};
+
+          ssl_certificate /etc/nginx/ssl/lsd.pem;  
+          ssl_certificate_key /etc/nginx/ssl/lsd.key;  
+          ssl_trusted_certificate /etc/nginx/ssl/lsd.crt;  
+
+          location / {
+            client_max_body_size 6G;
+            proxy_pass http://{{ container_name }}:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+          }
+      }
+
+      server {
+          listen 80;
+          listen [::]:80;
+          server_name {{ dns_name }};
+          server_tokens off;
+
+          location / {
+              return 301 https://$host$request_uri;
+          }
+      }
+
+- name: Copy SSL certificates
+  copy:
+    src: "../../../../certs/{{ item }}"
+    dest: ./ssl/
+  with_items:
+    - lsd.pem
+    - lsd.key
+    - lsd.crt
+
+- name: Create the docker-compose.yml file
+  template:
+    src: ./docker-compose.yml
+    dest: ./docker-compose.yml
+
+- name: Stop and remove existing container if it is running
   docker_container:
     name: "{{ container_name }}"
     state: absent
     force_kill: yes
+  ignore_errors: yes
+  vars:
+    ansible_docker_host: "unix://var/run/docker.sock"
 
-- name: Run the Docker container
-  docker_container:
+- name: Pull the OCA image
+  community.docker.docker_image:
+    name: "{{ docker_image }}:latest"
+    source: pull
+
+- name: Run Docker Compose up
+  become: True
+  shell:
+    cmd: "docker compose -f ./docker-compose.yml up -d"
+
+- name: Run the OCA container
+  community.docker.docker_container:
     name: "{{ container_name }}"
     image: "{{ docker_image }}:latest"
-    state: started
     restart_policy: always
+    state: started
+    detach: true
     ports:
       - "{{ container_port }}:{{ container_port }}"
-    detach: true
+    networks:
+      - name: oca-network

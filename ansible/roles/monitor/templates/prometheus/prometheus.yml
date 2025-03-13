@@ -1,0 +1,44 @@
+global:
+  scrape_interval: 5s 
+  evaluation_interval: 20s 
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets: ['{{ ansible_host }}:9093']
+
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["{{ ansible_host }}:9090"]
+
+  - job_name: "node"
+    scrape_interval: 5s
+    static_configs:
+      - targets: 
+          {% for ip in ips_to_monitor %}
+          - "{{ ip }}:9100"
+          {% endfor %}
+
+  - job_name: "oca"
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - "{{ dns_name }}"
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: "{{ ansible_host }}:9115"
+
+  - job_name: 'blackbox_exporter'  # collect blackbox exporter's operational metrics.
+    static_configs:
+      - targets: ['{{ ansible_host }}:9115']
