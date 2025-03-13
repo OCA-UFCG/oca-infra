@@ -13,7 +13,7 @@
 ## Configuration
 
 ## Certs configuration
-1. Add your SSL certs into `./certs` dir
+1. Add your SSL certs as `./certs/lsd.*` into `./certs`
 ```
 ## Example:
 certs/
