@@ -1,0 +1,25 @@
+version: "3"
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/:/etc/nginx/conf.d/:ro
+      - ./ssl/:/etc/nginx/ssl/:ro
+    networks:
+      - oca-network
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: always
+    ports:
+      - 9100:9100
+
+networks:
+  oca-network:
+    name: oca-network
+    driver: bridge

@@ -1,0 +1,5 @@
+---
+# vars file for roles/monitor
+dns_name: 'https://oca.lsd.ufcg.edu.br' 
+ips_to_monitor: ['192.168.56.200'] # <ip_vm1>, <ip_vm2>, ...
+slack_api_url: 'https://hooks.slack.com/services/<your_slack_webhook_url>'
