@@ -12,6 +12,16 @@
 
 ## Configuration
 
+## Certs configuration
+1. Add your SSL certs into `./certs` dir
+```
+## Example:
+certs/
+├── lsd.crt
+├── lsd.key
+└── lsd.pem
+```
+
 ### Ansible Configuration
 1. Configure Ansible inventory in `ansible/hosts.ini`:
 ```ini
