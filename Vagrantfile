@@ -13,4 +13,15 @@ Vagrant.configure("2") do |config|
     oca.ssh.private_key_path = ['~/.vagrant.d/insecure_private_key', SSH_KEY_PATH]
     oca.vm.provision "file", source: "#{SSH_KEY_PATH}.pub", destination: "~/.ssh/authorized_keys"
   end
+
+  config.vm.define "vagrant-monitoring" do |oca|
+    oca.vm.box = "ubuntu/jammy64"
+    oca.vm.hostname = "vagrant-monitoring" 
+    oca.vm.network "private_network", ip: "192.168.56.201"
+
+    oca.ssh.insert_key = false
+    oca.ssh.private_key_path = ['~/.vagrant.d/insecure_private_key', SSH_KEY_PATH]
+    oca.vm.provision "file", source: "#{SSH_KEY_PATH}.pub", destination: "~/.ssh/authorized_keys"
+  end
+
 end
