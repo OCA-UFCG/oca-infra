@@ -33,7 +33,7 @@
 - name: Create the prometheus alert.yml file
   template:
     src: prometheus/prometheus-alerts.yml
-    dest: ./prometheus/alerts.yml
+    dest: ./prometheus/prometheus-alerts.yml
 
 - name: Create the docker-compose.yml file
   template:

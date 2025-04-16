@@ -48,7 +48,9 @@ dns_name: <your_dns>
 # vars file for roles/monitor
 dns_name: <your_dns> 
 ips_to_monitor: [<ip_vm1>, <ip_vm2>]
-slack_api_url: 'https://hooks.slack.com/services/<your_slack_webhook_url>'
+mail_app_user: 'mail_user' # emails sender 
+mail_app_pass: 'mail_app_password' # password
+mail_app_to: 'mail_receiver' # emails receiver
 ```
 
 ## Usage
