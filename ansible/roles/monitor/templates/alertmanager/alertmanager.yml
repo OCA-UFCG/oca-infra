@@ -25,7 +25,6 @@ receivers:
           subject: "{% raw %}[OCA {{ .Status | toUpper }}] {{ .GroupLabels.alertname }}{% endraw %}"
         html: "{% raw %}{{ range .Alerts }}
           <h3>Alerta: {{ .Labels.alertname }}</h3>
-          <p><a href='http://monitor.oca-portal.com:9093'>Acessar Alert Manager</a></p>
           <p>Status: {{ $.Status }}</p>
           <p>Instância: {{ .Labels.instance }}</p>
           <p>Severidade: {{ .Labels.severity }}</p>
