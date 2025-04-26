@@ -18,6 +18,15 @@ services:
     restart: always
     ports:
       - 9100:9100
+      
+  oca:
+    image: "{{ docker_image }}:latest"
+    container_name: "{{ container_name }}"
+    restart: always
+    ports:
+      - "{{ container_port }}:{{ container_port }}"
+    networks:
+      - oca-network
 
 networks:
   oca-network:

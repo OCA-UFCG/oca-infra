@@ -13,10 +13,10 @@
 ## Configuration
 
 ## Certs configuration
-1. Add your SSL certs as `./certs/lsd.*` into `./certs`
+1. Add your SSL certs as `./ansible/roles/deploy/templates/ssl/lsd.*` into `./ansible/roles/deploy/templates/ssl/`
 ```
 ## Example:
-certs/
+ansible/roles/deploy/templates/ssl/
 ├── lsd.crt
 ├── lsd.key
 └── lsd.pem

@@ -16,8 +16,8 @@
     dest: ./nginx/oca.conf
 
 - name: Copy SSL certificates
-  copy:
-    src: "../../../../certs/{{ item }}"
+  template: 
+    src: "ssl/{{ item }}"
     dest: ./ssl/
   with_items:
     - lsd.pem
@@ -47,15 +47,3 @@
   become: True
   shell:
     cmd: "docker compose -f ./docker-compose.yml up -d"
-
-- name: Run the OCA container
-  community.docker.docker_container:
-    name: "{{ container_name }}"
-    image: "{{ docker_image }}:latest"
-    restart_policy: always
-    state: started
-    detach: true
-    ports:
-      - "{{ container_port }}:{{ container_port }}"
-    networks:
-      - name: oca-network
