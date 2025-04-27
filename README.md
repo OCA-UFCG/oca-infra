@@ -13,13 +13,22 @@
 ## Configuration
 
 ## Certs configuration
-1. Add your SSL certs as `./ansible/roles/deploy/templates/ssl/lsd.*` into `./ansible/roles/deploy/templates/ssl/`
+1. **App Certs** - Add your **App** SSL certs as `./ansible/roles/deploy/templates/ssl/ssl.*` into `./ansible/roles/deploy/templates/ssl/`
 ```
 ## Example:
 ansible/roles/deploy/templates/ssl/
-├── lsd.crt
-├── lsd.key
-└── lsd.pem
+├── ssl.crt
+├── ssl.key
+└── ssl.pem
+```
+
+2. **Monitor Certs** - Add your **Monitor** SSL certs as `./ansible/roles/monitor/templates/ssl/ssl.*` into `./ansible/roles/monitor/templates/ssl/`
+```
+## Example:
+ansible/roles/monitor/templates/ssl/
+├── ssl.crt
+├── ssl.key
+└── ssl.pem
 ```
 
 ### Ansible Configuration

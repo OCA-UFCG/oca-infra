@@ -15,6 +15,11 @@
     path: ./prometheus
     state: directory
 
+- name: Ensure the nginx directory exists
+  file:
+    path: ./nginx
+    state: directory
+
 - name: Create the alertmanager.yml file
   template:
     src: alertmanager/alertmanager.yml
@@ -34,6 +39,11 @@
   template:
     src: prometheus/prometheus-alerts.yml
     dest: ./prometheus/prometheus-alerts.yml
+
+- name: Create the monitor.conf file for Nginx
+  template:
+    src: nginx/monitor.conf
+    dest: ./nginx/monitor.conf
 
 - name: Create the docker-compose.yml file
   template:

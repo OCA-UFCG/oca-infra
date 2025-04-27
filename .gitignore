@@ -1,3 +1,4 @@
 .vagrant/*
-certs/*
+ansible/roles/deploy/templates/ssl/*
+ansible/roles/monitor/templates/ssl/*
 venv

@@ -20,9 +20,9 @@
     src: "ssl/{{ item }}"
     dest: ./ssl/
   with_items:
-    - lsd.pem
-    - lsd.key
-    - lsd.crt
+    - ssl.pem
+    - ssl.key
+    - ssl.crt
 
 - name: Create the docker-compose.yml file
   template:
