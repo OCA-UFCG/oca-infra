@@ -265,15 +265,23 @@ lugar certo é `/etc/letsencrypt/renewal-hooks/deploy/`: o certbot executa tudo 
 estiver lá, uma vez por lineage, **só quando a renovação de fato acontece**. Não requer
 mexer na unit do pacote.
 
+O hook de reload **é gerado pelo role `deploy`** deste repositório
+(`ansible/roles/deploy/templates/letsencrypt/reload-nginx.sh`), então máquinas novas já
+nascem com ele — não repita a instalação à mão. O nome do container vem da var
+`nginx_container_name`. O hook sai com 0 quando o container não está rodando: um
+container parado não é falha de renovação.
+
 | Host | Hook | O que faz |
 |---|---|---|
 | `datane` | `/etc/letsencrypt/renewal-hooks/deploy/00-reload-nginx.sh` | `nginx -t` + `nginx -s reload` no container `ubuntu-nginx-1` |
 | `sap` | `/etc/letsencrypt/renewal-hooks/deploy/00-sync-certs-reload-nginx.sh` | copia as lineages para os `.pem` planos de `/home/ubuntu/ssl/`, depois `nginx -t` + reload |
 | `sap` (sedes) | `/home/ubuntu/ssl/renewal-hooks/deploy/00-reload-nginx.sh` | reload, para quando o config-dir separado for renovado |
 
-O hook do `sap` é maior porque lá o nginx não lê de `/etc/letsencrypt` — ele lê cópias
-planas. O hook refaz a cópia preservando as permissões (`0644` na fullchain, `0600` na
-privkey) e só então recarrega:
+O hook do `sap` é a exceção: **não vem do role**, e é maior porque lá o nginx não lê de
+`/etc/letsencrypt` — lê cópias planas. Ele refaz a cópia preservando as permissões
+(`0644` na fullchain, `0600` na privkey) e só então recarrega. Codificar essa
+particularidade no ansible seria enraizar a gambiarra; o certo é migrar o host para o
+layout padrão (§4.2), e aí ele passa a usar o hook do role como os outros.
 
 ```sh
 sync_cert sap.oca-portal.com  ""      # -> ssl/fullchain.pem     + ssl/privkey.pem
