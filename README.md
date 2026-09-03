@@ -43,6 +43,7 @@ container_port: 3000
 container_name: oca-frontend-app
 docker_image: ocaufcg/oca-frontend
 dns_name: <your_dns>
+nginx_container_name: ubuntu-nginx-1  # ver nota abaixo
 
 ---
 # vars file for roles/monitor
@@ -52,6 +53,22 @@ mail_app_user: 'mail_user' # emails sender
 mail_app_pass: 'mail_app_password' # password
 mail_app_to: 'mail_receiver' # emails receiver
 ```
+
+#### `nginx_container_name`
+
+Nome do container do nginx, usado pelo deploy hook do certbot que o role instala
+em `/etc/letsencrypt/renewal-hooks/deploy/00-reload-nginx.sh`.
+
+O hook existe porque o nginx roda em container: quando o certbot renova, o
+arquivo em disco fica novo, mas o processo continua servindo o certificado que
+carregou quando subiu. Sem o reload, o host passa a servir certificado vencido
+tendo o renovado em disco.
+
+O padrão `ubuntu-nginx-1` vale para hosts provisionados por este role, porque o
+compose roda no home do `ansible_user` e o docker compose nomeia o container como
+`<basename-do-diretório>-nginx-1`. Hosts cujo nginx foi criado à mão com
+`docker run --name nginx` precisam sobrescrever para `nginx` — confira com
+`docker ps` antes de rodar.
 
 ## Usage
 ### Running Ansible Playbooks

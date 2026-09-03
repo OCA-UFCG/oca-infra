@@ -4,3 +4,9 @@ container_port: 3000
 container_name: oca-frontend-app
 docker_image: ocaufcg/oca-frontend
 dns_name: 'https://oca.lsd.ufcg.edu.br'
+# Nome do container do nginx, usado pelo deploy hook do certbot.
+# O compose roda no home do ansible_user, e o docker compose nomeia o container
+# como <basename-do-diretorio>-nginx-1 -- com o usuario ubuntu, ubuntu-nginx-1.
+# Hosts cujo nginx foi criado fora deste role (docker run --name nginx) precisam
+# sobrescrever para 'nginx'.
+nginx_container_name: ubuntu-nginx-1

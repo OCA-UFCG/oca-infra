@@ -59,3 +59,27 @@
       - "{{ container_port }}:{{ container_port }}"
     networks:
       - name: oca-network
+
+# Reload do nginx apos renovacao de certificado.
+#
+# O certbot renova o arquivo em disco, mas o nginx so rele o certificado quando
+# recebe um reload. Sem isto, um host pode servir certificado vencido tendo o
+# renovado em disco -- foi o que aconteceu com o datane em 2026-09-02.
+#
+# O diretorio e criado mesmo onde o certbot ainda nao esta instalado: o hook
+# fica pronto para quando estiver, e a task e idempotente.
+- name: Ensure the certbot deploy-hook directory exists
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install the nginx reload hook for certbot renewals
+  ansible.builtin.template:
+    src: letsencrypt/reload-nginx.sh
+    dest: /etc/letsencrypt/renewal-hooks/deploy/00-reload-nginx.sh
+    owner: root
+    group: root
+    mode: "0755"
