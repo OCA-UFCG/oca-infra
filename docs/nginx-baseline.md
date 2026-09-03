@@ -179,12 +179,15 @@ Em ordem de risco:
    | `datane` | `datanordeste-portal.com` (SAN, cobre os 2 domínios) | `webroot` | ✅ renova |
    | `datane` | `datanordeste.sudene.gov.br` | `nginx` | ❌ falha sempre — **e é redundante**, o SAN acima já cobre esse domínio |
    | `sap` | `sap.oca-portal.com` | `webroot` | ✅ renova |
-   | `sap` | `sap.lsd.ufcg.edu.br` | `webroot` | ⚠️ falhou no dry-run com `authorization must be pending` |
+   | `sap` | `sap.lsd.ufcg.edu.br` | `webroot` | ❔ inconclusivo — ver nota abaixo |
    | `sap` | `analise-multicriterial.oca-portal.com` | `standalone` | ❌ falha sempre — **vencida desde 2026-07-27**; o DNS aponta para `150.165.85.28`, que não é este host |
 
    Como uma lineage quebrada faz `certbot renew` terminar com status de erro, o timer
    falha em toda execução e o sinal real fica enterrado. Foi assim que o vencimento no
-   `datane` passou despercebido. As duas órfãs devem ser removidas:
+   `datane` passou despercebido.
+
+   A remoção das duas órfãs é a correção recomendada — **ainda não executada, pendente
+   de decisão**:
 
    ```bash
    # datane
@@ -192,6 +195,15 @@ Em ordem de risco:
    # sap
    sudo certbot delete --cert-name analise-multicriterial.oca-portal.com
    ```
+
+   > **Sobre o `sap.lsd.ufcg.edu.br`:** ele falhou nos dry-runs de 2026-09-03, primeiro
+   > com `authorization must be pending` e depois com `rateLimited :: Service busy`.
+   > O segundo erro é limite do servidor **de staging**, atingido por dry-runs repetidos
+   > em sequência — ou seja, provavelmente ruído do próprio teste, e não defeito da
+   > lineage. Sua configuração é `webroot`, idêntica à do `sap.oca-portal.com`, que
+   > renovou com sucesso. **O estado dele é inconclusivo**; precisa de um novo
+   > `certbot renew --dry-run --cert-name sap.lsd.ufcg.edu.br` depois de algumas horas
+   > sem outras tentativas. Vence em 2026-11-23, então há folga.
 4. **Segredo em texto plano na config do `datane`.** O bloco `/contentful-api` do
    `datane.conf` carrega um token do Contentful hardcoded em
    `proxy_set_header Authorization "Bearer ..."`. Precisa sair do arquivo (variável de
